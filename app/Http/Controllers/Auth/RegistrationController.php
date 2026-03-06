@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use Spatie\Permission\Models\Role;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules\Password;
@@ -26,6 +27,13 @@ class RegistrationController extends Controller
             'role' => $validated['role'] ?? 'Student',
         ]);
 
+        $roleName = $validated['role'] ?? 'Student';
+        Role::firstOrCreate([
+            'name' => $roleName,
+            'guard_name' => 'sanctum',
+        ]);
+        $user->assignRole($roleName);
+
         $token = $user->createToken('default')->plainTextToken;
 
         return response()->json([
@@ -39,4 +47,3 @@ class RegistrationController extends Controller
         ], 201);
     }
 }
-
