@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Notifications\WelcomeNotification;
 use Spatie\Permission\Models\Role;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -33,6 +34,8 @@ class RegistrationController extends Controller
             'guard_name' => 'sanctum',
         ]);
         $user->assignRole($roleName);
+
+        $user->notify(new WelcomeNotification());
 
         $token = $user->createToken('default')->plainTextToken;
 
