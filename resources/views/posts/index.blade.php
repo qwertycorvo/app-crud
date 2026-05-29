@@ -16,7 +16,15 @@
 
     @forelse($posts as $post)
         <div class="post-item">
+            @if($post->image)
+                <div class="post-image" style="margin-bottom: 15px;">
+                    <img src="{{ asset('storage/' . $post->image) }}" alt="{{ $post->title }}" style="max-width: 100%; height: auto; border-radius: 5px;">
+                </div>
+            @endif
             <div class="post-title"><a href="/posts/{{ $post->id }}">{{ $post->title }}</a></div>
+            <div class="post-meta">
+                By {{ $post->user ? $post->user->name : 'Anonymous' }} on {{ $post->created_at->format('M d, Y') }}
+            </div>
             <div class="post-content">{{ Str::limit($post->content, 150) }}</div>
             <div class="post-actions">
                 <a href="/posts/{{ $post->id }}" class="btn btn-secondary">View</a>

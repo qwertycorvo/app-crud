@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Post;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 
 class PostController extends Controller
 {
@@ -12,7 +14,8 @@ class PostController extends Controller
      */
     public function index()
     {
-        $posts = Post::all();
+        // Use eager loading to fetch posts with their authors
+        $posts = Post::with('user')->latest()->get();
         return view('posts.index', compact('posts'));
     }
 
@@ -32,9 +35,21 @@ class PostController extends Controller
         $request->validate([
             'title' => 'required|string|max:255',
             'content' => 'required|string',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
-        Post::create($request->all());
+        $data = $request->all();
+
+        if ($request->hasFile('image')) {
+            $data['image'] = $request->file('image')->store('posts', 'public');
+        }
+
+        // Use the relationship to create a post for the authenticated user
+        if (Auth::check()) {
+            Auth::user()->posts()->create($data);
+        } else {
+            Post::create($data);
+        }
 
         return redirect('/posts')->with('success', 'Post created successfully!');
     }
@@ -44,6 +59,7 @@ class PostController extends Controller
      */
     public function show(Post $post)
     {
+        $post->load('user');
         return view('posts.show', compact('post'));
     }
 
@@ -63,9 +79,20 @@ class PostController extends Controller
         $request->validate([
             'title' => 'required|string|max:255',
             'content' => 'required|string',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
-        $post->update($request->all());
+        $data = $request->all();
+
+        if ($request->hasFile('image')) {
+            // Delete old image if exists
+            if ($post->image) {
+                Storage::disk('public')->delete($post->image);
+            }
+            $data['image'] = $request->file('image')->store('posts', 'public');
+        }
+
+        $post->update($data);
 
         return redirect('/posts')->with('success', 'Post updated successfully!');
     }
@@ -75,6 +102,10 @@ class PostController extends Controller
      */
     public function destroy(Post $post)
     {
+        if ($post->image) {
+            Storage::disk('public')->delete($post->image);
+        }
+        
         $post->delete();
 
         return redirect('/posts')->with('success', 'Post deleted successfully!');

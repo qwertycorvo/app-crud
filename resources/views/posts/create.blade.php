@@ -19,7 +19,7 @@
         </div>
     @endif
 
-    <form action="/posts" method="POST">
+    <form action="/posts" method="POST" enctype="multipart/form-data">
         @csrf
         <div class="form-group">
             <label for="title">Title</label>
@@ -33,6 +33,14 @@
             <label for="content">Content</label>
             <textarea id="content" name="content" required>{{ old('content') }}</textarea>
             @error('content')
+                <div class="errors">{{ $message }}</div>
+            @enderror
+        </div>
+
+        <div class="form-group">
+            <label for="image">Image</label>
+            <input type="file" id="image" name="image">
+            @error('image')
                 <div class="errors">{{ $message }}</div>
             @enderror
         </div>

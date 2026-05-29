@@ -22,6 +22,7 @@
         .alert-success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
         .post-item { background: white; padding: 20px; margin-bottom: 15px; border-radius: 5px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
         .post-title { font-size: 1.3em; margin-bottom: 10px; }
+        .post-meta { font-size: 0.9em; color: #999; margin-bottom: 10px; }
         .post-content { color: #666; margin-bottom: 15px; }
         .post-actions { display: flex; gap: 10px; }
         form { background: white; padding: 20px; border-radius: 5px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }

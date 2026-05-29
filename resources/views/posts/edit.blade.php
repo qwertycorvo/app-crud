@@ -19,7 +19,7 @@
         </div>
     @endif
 
-    <form action="/posts/{{ $post->id }}" method="POST">
+    <form action="/posts/{{ $post->id }}" method="POST" enctype="multipart/form-data">
         @csrf
         @method('PUT')
         
@@ -35,6 +35,19 @@
             <label for="content">Content</label>
             <textarea id="content" name="content" required>{{ old('content', $post->content) }}</textarea>
             @error('content')
+                <div class="errors">{{ $message }}</div>
+            @enderror
+        </div>
+
+        <div class="form-group">
+            <label for="image">Image</label>
+            @if($post->image)
+                <div style="margin-bottom: 10px;">
+                    <img src="{{ asset('storage/' . $post->image) }}" alt="Current Image" style="max-width: 200px; border-radius: 5px;">
+                </div>
+            @endif
+            <input type="file" id="image" name="image">
+            @error('image')
                 <div class="errors">{{ $message }}</div>
             @enderror
         </div>
